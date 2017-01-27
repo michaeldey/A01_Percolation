@@ -47,6 +47,7 @@ public class Percolation {
 
 	public String numberOfOpenSites() {
 		// TODO Auto-generated method stub
+		// this should cound the number of sites that have been opened
 		return null;
 	}
 
