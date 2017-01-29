@@ -118,7 +118,6 @@ public class Percolation {
 	 * int N represents the width of the grid
 	 */
 	private int getX (int P){
-		System.out.println("x is: " + P/N);
 		return (P/N);}
 	
 	/*
@@ -128,7 +127,6 @@ public class Percolation {
 	 * int N represents the width of the grid
 	 */
 	private int getY (int P){
-		System.out.println("y is: " + P%N);
 		return (P%N);}
 	
 	/*
