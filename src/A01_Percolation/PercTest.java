@@ -5,16 +5,18 @@ public class PercTest {
 
 	public static void main(String[] args) {
 		int N = 5;
+
+		
+		int[] oneDArray = new int[N*N];
+		for (int i = 0; i < oneDArray.length; i++){
+			oneDArray[i] = 0;
+//			System.out.println("oneDArray adds " + i);
+		}
 		
 		Percolation perc = new Percolation(N);
 		
-		perc.open(1, 2);
+		perc.checkNeighbors(2, oneDArray, N);
 		
-		System.out.printf("isOpen: %b\n",perc.isOpen(1, 2));
-		
-		System.out.printf("isFull: %b\n",perc.isFull(1, 2));
-		
-		System.out.printf("percolates: %b\n",perc.percolates());
 
 	}
 

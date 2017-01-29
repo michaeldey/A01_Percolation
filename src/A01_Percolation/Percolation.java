@@ -59,7 +59,10 @@ public class Percolation {
 	 * int P represents the index of 1DArray[ ]
 	 * int N represents the width of the grid
 	 */
-	private int getX (int P, int N){return (P%N);}
+	private int getX (int P, int N){
+		int i = (P%N);
+		return i;
+	}
 	
 	/*
 	 * getY returns the Y value of the site
@@ -109,7 +112,7 @@ public class Percolation {
 	 * This method gets the X value of P
 	 * If x == N-1, site is at right side of grid
 	 */
-	private boolean checkIfRight(int P, int N){	return (getX(P, N)==N-1);}
+	private boolean checkIfRight(int P, int N){return (((P+1)%N) == 0);}
 	
 	/*
 	 * checkIfLeft checks if site is at the left side of the grid
@@ -122,40 +125,56 @@ public class Percolation {
 	 */
 	private boolean checkIfLeft(int P, int N){	return (getX(P, N)==0);	}
 	
-	private void checkNeighbors(int P, int[] oneDArray, int N){
+	public void checkNeighbors(int P, int[] oneDArray, int N){
 		int neighbor;
 		
 		// if site isn't on the top border
-		if (!checkIfTop(P, N)){ neighbor = neighborValue(P, (P-N), oneDArray); }
+		if (!checkIfTop(P, N)){ 
+			System.out.print("Top: ");
+			neighbor = neighborValue(P, (P-N), oneDArray); }
 		else {
 			//site is on the top
 			// todo connect site to water
+			System.out.println("This site is water, there is no one above.");
 		}
 		
 		// if site isn't on the bottom border
-		if (!checkIfBottom(P, N)){ neighbor = neighborValue(P, (P+N), oneDArray);}
+		if (!checkIfBottom(P, N)){ 
+			System.out.print("Bottom: ");
+			neighbor = neighborValue(P, (P+N), oneDArray);}
 		else{
 			// site is on bottom
 			// todo connect site to ground
+			System.out.println("This site is ground, there is no one below.");
 		}
 		
 		// if site isn't on the right side border
-		if (!checkIfRight(P, N)){ 
+		if (!checkIfRight(P, N)){
+			System.out.print("Right");
 			neighbor = neighborValue(P, (P+1), oneDArray);
 			
 			// todo connect neighbors if applicable
 		}
+		else{
+			//site is on the right
+			System.out.println("This site is on the right, there is no one to the right.");
+		}
 		
 		// if site isn't on the left side border
 		if (!checkIfLeft(P, N)){
+			System.out.print("left:");
 			neighbor = neighborValue(P, (P-1), oneDArray);
 			
 			//todo connect neighbors if applicable
 		}	
+		else{
+			//site is on the left
+			System.out.println("This site is on the left, there is no one to the left");
+		}
 
 	}//end of checkNeighbors
 	
-	private int neighborValue(int P, int neighbor, int[] oneDArray){
+	public int neighborValue(int P, int neighbor, int[] oneDArray){
 		switch (oneDArray[(neighbor)]){
 		case 0:
 			System.out.println("my neighbor is closed");
