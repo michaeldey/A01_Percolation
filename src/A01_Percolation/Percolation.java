@@ -19,7 +19,8 @@ public class Percolation {
 		 oneDArray = new int[N*N];
 		for (int i = 0; i < oneDArray.length; i++){
 			oneDArray[i] = 0;
-		}	 
+		}
+		printValues();
 	 }
 	
 	/*
@@ -28,6 +29,7 @@ public class Percolation {
 	 * A value of 1 means a site is now open, and not connected to water or ground
 	 */
 	 public void open(int i, int j){
+		 System.out.printf("\n*****\n");
 		 /*
 		  *  Throw a java.lang.IndexOutOfBoundsException 
 		  *  if any argument to open(), 
@@ -38,12 +40,14 @@ public class Percolation {
 		 //if statement is to eliminate fake "opens" in interactive Percolation
 		 if (oneDArray[pointer]==0) count++; //add to the "open" count
 		 
+		 oneDArray[pointer]=1; // 1 represents open
+		 if (checkIfRight(pointer)) oneDArray[pointer]=1;//open site
+		 if (checkIfLeft(pointer)) oneDArray[pointer]=1;//open site
 		 if (checkIfTop(pointer)) oneDArray[pointer]=2;//connected to water
-//		 else if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground		 
-		 else oneDArray[pointer]=1; // 1 represents open
-		 
-		 getX(pointer);
-		 getY(pointer);
+		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
+		
+		 printValues();
+//		 checkNeighbors(pointer);
 		 
 	 }
 	
@@ -60,7 +64,7 @@ public class Percolation {
 		  */
 		 catchOutOfBounds(i,j);		  
 		 int pointer = xyTo1D(i, j);
-		 return(oneDArray[pointer]==1); // 1 represents open
+		 return(!(oneDArray[pointer]==0)); // Site is open if it is not a 0
 	 }
 	
 	 /*
@@ -118,7 +122,8 @@ public class Percolation {
 	 * int N represents the width of the grid
 	 */
 	private int getX (int P){
-		return (P/N);}
+		System.out.println("X value of " + P + ": " + (P%N));
+		return (P%N);}
 	
 	/*
 	 * getY returns the Y value of the site
@@ -127,7 +132,8 @@ public class Percolation {
 	 * int N represents the width of the grid
 	 */
 	private int getY (int P){
-		return (P%N);}
+		System.out.println("Y value of " + P + ": " + (P/N));
+		return (P/N);}
 	
 	/*
 	 * xyTo1D takes x and y values and returns a position on 1D array
@@ -136,7 +142,7 @@ public class Percolation {
 	 * y = y value
 	 * N = width of N x N array
 	 */
-	private int xyTo1D(int x, int y){ return ((y * N)+x); }
+	private int xyTo1D(int x, int y){ return ((x * N)+y); }
 	
 	/*
 	 * checkIfTop checks if site is at the top of the grid
@@ -147,7 +153,11 @@ public class Percolation {
 	 * This method gets the Y value of P
 	 * If y == 0, site is at top of grid
 	 */
-	private boolean checkIfTop(int P){ return (getY(P)==0); }
+	private boolean checkIfTop(int P){ 
+		boolean m = (getY(P)==0);
+		if (m) System.out.println("I am at the top");
+		return (getY(P)==0); 
+		}
 	
 	/*
 	 * checkIfBottom checks if site is at the bottom of the grid
@@ -158,7 +168,11 @@ public class Percolation {
 	 * This method gets the Y value of P
 	 * If y == N-1, site is at bottom of grid
 	 */
-	private boolean checkIfBottom(int P){ return (getY(P)==N-1);}
+	private boolean checkIfBottom(int P){
+		boolean m = ((getY(P))==(N-1));
+		if (m) System.out.println("I am at the bottom");
+		return ((getY(P))==(N-1));
+		}
 	
 	/*
 	 * checkIfRight checks if site is at the right of the grid
@@ -169,7 +183,11 @@ public class Percolation {
 	 * This method gets the X value of P
 	 * If x == N-1, site is at right side of grid
 	 */
-	private boolean checkIfRight(int P){return (((P+1)%N) == 0);}
+	private boolean checkIfRight(int P){
+		System.out.printf("check right: %d + 1 mod %d = %d\n",P,N,((P)%N));
+		System.out.printf("On right border: %b\n", (((P+1)%N)==0));
+		return (((P+1)%N) == 0);
+	}
 	
 	/*
 	 * checkIfLeft checks if site is at the left side of the grid
@@ -180,15 +198,20 @@ public class Percolation {
 	 * This method gets the X value of P
 	 * If x == 0, site is at left side of grid
 	 */
-	private boolean checkIfLeft(int P){	return (getX(P)==0);	}
+	private boolean checkIfLeft(int P){	
+		System.out.printf("On left border: %b\n", (getX(P)==0));
+		return (getX(P)==0);		
+	}
 	
-	private void checkNeighbors(int P, int[] oneDArray, int N){
+	private void checkNeighbors(int P){
 		int neighbor;
 		
 		// if site isn't on the top border
 		if (!checkIfTop(P)){ 
 			System.out.print("Top: ");
-			neighbor = neighborValue((P-N)); }
+			neighbor = neighborValue(P, (P-N)); 
+			
+		}
 		else {
 			//site is on the top
 			// todo connect site to water
@@ -198,7 +221,7 @@ public class Percolation {
 		// if site isn't on the bottom border
 		if (!checkIfBottom(P)){ 
 			System.out.print("Bottom: ");
-			neighbor = neighborValue((P+N));}
+			neighbor = neighborValue(P,(P+N));}
 		else{
 			// site is on bottom
 			// todo connect site to ground
@@ -207,8 +230,8 @@ public class Percolation {
 		
 		// if site isn't on the right side border
 		if (!checkIfRight(P)){
-			System.out.print("Right");
-			neighbor = neighborValue((P+1));
+			System.out.print("Right: ");
+			neighbor = neighborValue(P,(P+1));
 			
 			// todo connect neighbors if applicable
 		}
@@ -219,8 +242,8 @@ public class Percolation {
 		
 		// if site isn't on the left side border
 		if (!checkIfLeft(P)){
-			System.out.print("left:");
-			neighbor = neighborValue((P-1));
+			System.out.print("left: ");
+			neighbor = neighborValue(P,(P-1));
 			
 			//todo connect neighbors if applicable
 		}	
@@ -237,7 +260,7 @@ public class Percolation {
 	 *  it evaluates what value the neighbor has, 
 	 *  and takes the appropriate action based on it's value
 	 */
-	private int neighborValue(int neighbor){
+	private int neighborValue(int P, int neighbor){
 		switch (oneDArray[(neighbor)]){
 		case 0:
 			System.out.println("my neighbor is closed");
@@ -245,20 +268,29 @@ public class Percolation {
 		case 1:
 			System.out.println("my neighbor is open");
 			//todo merge P and neighbor
+			//union(P, neighbor);
 			return 1;
 		case 2:
 			System.out.println("my neighbor is water");
 			//todo merge P and neighbor
 			// make P water
+			oneDArray[P]=2;
 			return 2;
 		case 3:
 			System.out.println("my neighbor is ground");
 			//todo merge P and neighbor
 			// make P ground
+			oneDArray[P]=3;
 			return 3;
 		default:
 			return 0;
 	}//end of switch
 	}
 	
+	public void printValues(){
+		for (int i = 0; i < oneDArray.length; i++){
+			if (i%N == 0)System.out.println();
+			System.out.print(oneDArray[i]+" ");
+		}
+	}
 }
