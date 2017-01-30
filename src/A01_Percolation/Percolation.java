@@ -1,10 +1,14 @@
 package A01_Percolation;
 
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
 public class Percolation {
 	
 	private int N; // N is the length of one array side
 	private int[] oneDArray;//this will hold the value of sites of the N x N grid
 	private int count = 0; //this counts how many sites have been opened
+	private WeightedQuickUnionUF uf;
+	private boolean percolates = false;
 	
 	/*
 	 * Percolation creates an N by N grid with all sites blocked
@@ -20,6 +24,7 @@ public class Percolation {
 		for (int i = 0; i < oneDArray.length; i++){
 			oneDArray[i] = 0;
 		}
+		uf = new WeightedQuickUnionUF(N*N);//create Union find object with N*N initial values
 		printValues();
 	 }
 	
@@ -47,7 +52,7 @@ public class Percolation {
 		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
 		
 		 printValues();
-//		 checkNeighbors(pointer);
+		 checkNeighbors(pointer);
 		 
 	 }
 	
@@ -80,12 +85,14 @@ public class Percolation {
 		  */
 		 catchOutOfBounds(i,j);		  
 		 int pointer = xyTo1D(i, j);
+		 oneDArray[pointer] = oneDArray[uf.find(pointer)];
+		 // find the value of the parent of pointer and return that value
 		 return(oneDArray[pointer]==2); // 2 represents water
 	 }
 		 
 	 public boolean percolates(){             
 		 // does the system percolate?
-		 return false;
+		 return percolates;
 	 }
 
 	public String numberOfOpenSites() {
@@ -122,7 +129,7 @@ public class Percolation {
 	 * int N represents the width of the grid
 	 */
 	private int getX (int P){
-		System.out.println("X value of " + P + ": " + (P%N));
+//		System.out.println("X value of " + P + ": " + (P%N));
 		return (P%N);}
 	
 	/*
@@ -132,7 +139,7 @@ public class Percolation {
 	 * int N represents the width of the grid
 	 */
 	private int getY (int P){
-		System.out.println("Y value of " + P + ": " + (P/N));
+//		System.out.println("Y value of " + P + ": " + (P/N));
 		return (P/N);}
 	
 	/*
@@ -155,7 +162,7 @@ public class Percolation {
 	 */
 	private boolean checkIfTop(int P){ 
 		boolean m = (getY(P)==0);
-		if (m) System.out.println("I am at the top");
+//		if (m) System.out.println("I am at the top");
 		return (getY(P)==0); 
 		}
 	
@@ -170,7 +177,7 @@ public class Percolation {
 	 */
 	private boolean checkIfBottom(int P){
 		boolean m = ((getY(P))==(N-1));
-		if (m) System.out.println("I am at the bottom");
+//		if (m) System.out.println("I am at the bottom");
 		return ((getY(P))==(N-1));
 		}
 	
@@ -184,8 +191,7 @@ public class Percolation {
 	 * If x == N-1, site is at right side of grid
 	 */
 	private boolean checkIfRight(int P){
-		System.out.printf("check right: %d + 1 mod %d = %d\n",P,N,((P)%N));
-		System.out.printf("On right border: %b\n", (((P+1)%N)==0));
+//		if ((((P+1)%N) == 0)) System.out.println("I am on the right.");
 		return (((P+1)%N) == 0);
 	}
 	
@@ -199,7 +205,7 @@ public class Percolation {
 	 * If x == 0, site is at left side of grid
 	 */
 	private boolean checkIfLeft(int P){	
-		System.out.printf("On left border: %b\n", (getX(P)==0));
+//		System.out.printf("On left border: %b\n", (getX(P)==0));
 		return (getX(P)==0);		
 	}
 	
@@ -208,48 +214,48 @@ public class Percolation {
 		
 		// if site isn't on the top border
 		if (!checkIfTop(P)){ 
-			System.out.print("Top: ");
+//			System.out.print("Top: ");
 			neighbor = neighborValue(P, (P-N)); 
 			
 		}
 		else {
 			//site is on the top
 			// todo connect site to water
-			System.out.println("This site is water, there is no one above.");
+//			System.out.println("This site is water, there is no one above.");
 		}
 		
 		// if site isn't on the bottom border
 		if (!checkIfBottom(P)){ 
-			System.out.print("Bottom: ");
+//			System.out.print("Bottom: ");
 			neighbor = neighborValue(P,(P+N));}
 		else{
 			// site is on bottom
 			// todo connect site to ground
-			System.out.println("This site is ground, there is no one below.");
+//			System.out.println("This site is ground, there is no one below.");
 		}
 		
 		// if site isn't on the right side border
 		if (!checkIfRight(P)){
-			System.out.print("Right: ");
+//			System.out.print("Right: ");
 			neighbor = neighborValue(P,(P+1));
 			
 			// todo connect neighbors if applicable
 		}
 		else{
 			//site is on the right
-			System.out.println("This site is on the right, there is no one to the right.");
+//			System.out.println("This site is on the right, there is no one to the right.");
 		}
 		
 		// if site isn't on the left side border
 		if (!checkIfLeft(P)){
-			System.out.print("left: ");
+//			System.out.print("left: ");
 			neighbor = neighborValue(P,(P-1));
 			
 			//todo connect neighbors if applicable
 		}	
 		else{
 			//site is on the left
-			System.out.println("This site is on the left, there is no one to the left");
+//			System.out.println("This site is on the left, there is no one to the left");
 		}
 
 	}//end of checkNeighbors
@@ -261,27 +267,53 @@ public class Percolation {
 	 *  and takes the appropriate action based on it's value
 	 */
 	private int neighborValue(int P, int neighbor){
+		boolean hasWater=(oneDArray[P] == 2 || oneDArray[neighbor] == 2);
+		boolean hasGround=(oneDArray[P] == 3 || oneDArray[neighbor] == 3);
+		
 		switch (oneDArray[(neighbor)]){
 		case 0:
-			System.out.println("my neighbor is closed");
+//			System.out.println("my neighbor is closed");
 			return 0;
 		case 1:
-			System.out.println("my neighbor is open");
-			//todo merge P and neighbor
-			//union(P, neighbor);
-			return 1;
+//			System.out.println("my neighbor is open");
+			//merge P and neighbor
+			uf.union(P, neighbor);
+			if (hasWater) {
+				oneDArray[uf.find(P)]=2; //make the head of the list water
+				return 2;
+			}
+			else if (hasGround) {
+				oneDArray[uf.find(P)]=3; //make the head of the list ground
+				return 3;
+			}
+			else return 1;
 		case 2:
-			System.out.println("my neighbor is water");
-			//todo merge P and neighbor
-			// make P water
+//			System.out.println("my neighbor is water");
+			uf.union(P, neighbor);
 			oneDArray[P]=2;
+			oneDArray[uf.find(P)]=2;			
+			// make P water
+
+			if (hasGround){
+				percolates = true;//I am ground and I am touching water
+			}
 			return 2;
 		case 3:
-			System.out.println("my neighbor is ground");
-			//todo merge P and neighbor
-			// make P ground
-			oneDArray[P]=3;
-			return 3;
+//			System.out.println("my neighbor is ground");
+			uf.union(P, neighbor);
+
+			if (hasWater){
+				percolates = true;//I am ground and I am touching water
+				oneDArray[P]=2;
+				oneDArray[uf.find(P)]=2;
+				return 2;
+			}
+			else{
+				// make P ground
+				oneDArray[P]=3;
+				oneDArray[uf.find(P)]=3;
+				return 3;
+			}
 		default:
 			return 0;
 	}//end of switch
@@ -292,5 +324,6 @@ public class Percolation {
 			if (i%N == 0)System.out.println();
 			System.out.print(oneDArray[i]+" ");
 		}
+		System.out.println();
 	}
 }
