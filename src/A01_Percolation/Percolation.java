@@ -3,6 +3,12 @@ package A01_Percolation;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
+	 public static void main(String[] args) {
+	 //todo write method tests
+		 //test open method
+		 
+		 //test percolation constructor
+	 }
 	
 	private int N; // N is the length of one array side
 	private int[] oneDArray;//this will hold the value of sites of the N x N grid
@@ -25,7 +31,7 @@ public class Percolation {
 			oneDArray[i] = 0;
 		}
 		uf = new WeightedQuickUnionUF(N*N);//create Union find object with N*N initial values
-		printValues();
+//		printValues();
 	 }
 	
 	/*
@@ -34,7 +40,7 @@ public class Percolation {
 	 * A value of 1 means a site is now open, and not connected to water or ground
 	 */
 	 public void open(int i, int j){
-		 System.out.printf("\n*****\n");
+//		 System.out.printf("\n*****\n");
 		 /*
 		  *  Throw a java.lang.IndexOutOfBoundsException 
 		  *  if any argument to open(), 
@@ -51,7 +57,7 @@ public class Percolation {
 		 if (checkIfTop(pointer)) oneDArray[pointer]=2;//connected to water
 		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
 		
-		 printValues();
+//		 printValues();
 		 checkNeighbors(pointer);
 		 
 	 }
@@ -95,6 +101,9 @@ public class Percolation {
 		 return percolates;
 	 }
 
+	 /*
+	  * numberOfOpenSites returns a string telling how many open sites there are
+	  */
 	public String numberOfOpenSites() {
 		// this should count the number of sites that have been opened		
 		return String.format("There are %d open sites.\n", count);
@@ -319,11 +328,11 @@ public class Percolation {
 	}//end of switch
 	}
 	
-	public void printValues(){
-		for (int i = 0; i < oneDArray.length; i++){
-			if (i%N == 0)System.out.println();
-			System.out.print(oneDArray[i]+" ");
-		}
-		System.out.println();
-	}
+//	public void printValues(){
+//		for (int i = 0; i < oneDArray.length; i++){
+//			if (i%N == 0)System.out.println();
+//			System.out.print(oneDArray[i]+" ");
+//		}
+//		System.out.println();
+//	}
 }
