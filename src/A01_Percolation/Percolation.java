@@ -57,7 +57,7 @@ public class Percolation {
 		 if (checkIfTop(pointer)) oneDArray[pointer]=2;//connected to water
 		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
 		
-//		 printValues();
+		 printValues();
 		 checkNeighbors(pointer);
 		 
 	 }
@@ -328,11 +328,11 @@ public class Percolation {
 	}//end of switch
 	}
 	
-//	public void printValues(){
-//		for (int i = 0; i < oneDArray.length; i++){
-//			if (i%N == 0)System.out.println();
-//			System.out.print(oneDArray[i]+" ");
-//		}
-//		System.out.println();
-//	}
+	public void printValues(){
+		for (int i = 0; i < oneDArray.length; i++){
+			if (i%N == 0)System.out.println();
+			System.out.print(oneDArray[i]+" ");
+		}
+		System.out.println();
+	}
 }
