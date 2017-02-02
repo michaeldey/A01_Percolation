@@ -49,8 +49,7 @@ public class PercolationStats {
 				count++;
 				if (perc.percolates()){
 					System.out.println("Percolates at: " + count);
-					percScores[pSPointer] = count;//record count into scores array
-					pSPointer++;//increment the pointer one
+					percScores[pSPointer++] = count;//record count into scores array					
 					count = 0; //reset the count
 					break; //stop once percolation occurs and go to next simulation
 				}
@@ -70,15 +69,9 @@ public class PercolationStats {
 		System.out.printf("Standard Deviation: %f\n", stddev());
 	}//end of constructor
 	
-
-
-	public double mean(){                   
-		return StdStats.mean(percScores);
-	}
+	public double mean(){return StdStats.mean(percScores);}
 	
-	public double stddev(){                 
-		return StdStats.stddev(percScores);
-	}
+	public double stddev(){return StdStats.stddev(percScores);}
 	
 	public double confidenceLow(){          
 		// low  endpoint of 95% confidence interval
