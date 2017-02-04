@@ -49,16 +49,24 @@ public class Percolation {
 		 catchOutOfBounds(i,j);		  
 		 int pointer = xyTo1D(i, j);
 		 //if statement is to eliminate fake "opens" in interactive Percolation
-		 if (oneDArray[pointer]==0) count++; //add to the "open" count
+//		 if (oneDArray[pointer]==0) count++; //add to the "open" count
+		 if (getValueOfParent(pointer)==0){
+			 count++; //add to the "open" count
+			 if (checkIfRight(pointer) || checkIfLeft(pointer)) setValueOfParent(pointer,1);//open site
+			 if (checkIfTop(pointer)) setValueOfParent(pointer,2);//connected to water
+			 if (checkIfBottom(pointer)) setValueOfParent(pointer,3);//connected to ground
+			 if (getValueOfParent(pointer)==0)setValueOfParent(pointer,1);
+		 }		 
+
+//		 oneDArray[pointer]=1; // 1 represents open
+//		 if (checkIfRight(pointer) || checkIfLeft(pointer)) oneDArray[pointer]=1;//open site
+//		 if (checkIfTop(pointer)) oneDArray[pointer]=2;//connected to water
+//		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
+	
 		 
-		 oneDArray[pointer]=1; // 1 represents open
-		 if (checkIfRight(pointer)) oneDArray[pointer]=1;//open site
-		 if (checkIfLeft(pointer)) oneDArray[pointer]=1;//open site
-		 if (checkIfTop(pointer)) oneDArray[pointer]=2;//connected to water
-		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
-		
+		 mergeAllNeighbors(pointer);
+		 oneDArray[pointer] = getValueOfParent(pointer);
 		 printValues();
-		 checkNeighbors(pointer);
 		 
 	 }
 	
@@ -98,6 +106,7 @@ public class Percolation {
 		 
 	 public boolean percolates(){             
 		 // does the system percolate?
+		 System.out.println("Percolates: " + percolates);
 		 return percolates;
 	 }
 
@@ -218,6 +227,44 @@ public class Percolation {
 		return (getX(P)==0);		
 	}
 	
+	private void mergeAllNeighbors(int P){
+		int neighbor;
+		// check if P is on the outside perimeter, if not merge with neighbor
+		if (!checkIfRight(P)){
+			neighbor = (P+1);
+			merge(P, neighbor);
+		}
+		if (!checkIfLeft(P)){
+			neighbor = (P-1);
+			merge(P, neighbor);
+		}
+		if (!checkIfBottom(P)){
+			neighbor = (P+N);
+			merge(P, neighbor);
+		}
+		if (!checkIfTop(P)){
+			neighbor = (P-N);
+			merge(P, neighbor);
+		}		
+		
+	}
+	
+	private void merge(int P, int neighbor){
+		int neighborValue = getValueOfParent(neighbor);
+		if (neighborValue==0) return; //neighbor is not open. Exit the method		
+		int pValue = getValueOfParent(P);
+		boolean hasWater = false;
+		boolean hasGround = false;
+		if (pValue == 3 || neighborValue == 3){hasGround = true;}
+		if (pValue == 2 || neighborValue == 2){hasWater = true;}
+		uf.union(P, neighbor); //merge the trees
+		if (hasWater && hasGround) percolates = true;
+		setValueOfParent(P,1); //make parent open
+		if (hasGround == true) setValueOfParent(P,3); //make parent ground
+		if (hasWater == true) setValueOfParent(P,2); //make parent water
+
+	}
+	
 	private void checkNeighbors(int P){
 		int neighbor;
 		
@@ -328,10 +375,21 @@ public class Percolation {
 	}//end of switch
 	}
 	
+	public int getValueOfParent(int P){
+		int i = uf.find(P);
+		return oneDArray[i];
+	}
+	
+	public void setValueOfParent(int P, int value){
+		int i = uf.find(P);
+		oneDArray[i] = value;
+		oneDArray[P] = value;//make sure the value of P is correct
+	}
+	
 	public void printValues(){
 		for (int i = 0; i < oneDArray.length; i++){
 			if (i%N == 0)System.out.println();
-			System.out.print(oneDArray[i]+" ");
+			System.out.print(getValueOfParent(i)+" ");
 		}
 		System.out.println();
 	}
