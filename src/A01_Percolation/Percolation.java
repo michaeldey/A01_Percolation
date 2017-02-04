@@ -40,7 +40,6 @@ public class Percolation {
 	 * A value of 1 means a site is now open, and not connected to water or ground
 	 */
 	 public void open(int i, int j){
-//		 System.out.printf("\n*****\n");
 		 /*
 		  *  Throw a java.lang.IndexOutOfBoundsException 
 		  *  if any argument to open(), 
@@ -49,7 +48,6 @@ public class Percolation {
 		 catchOutOfBounds(i,j);		  
 		 int pointer = xyTo1D(i, j);
 		 //if statement is to eliminate fake "opens" in interactive Percolation
-//		 if (oneDArray[pointer]==0) count++; //add to the "open" count
 		 if (getValueOfParent(pointer)==0){
 			 count++; //add to the "open" count
 			 if (checkIfRight(pointer) || checkIfLeft(pointer)) setValueOfParent(pointer,1);//open site
@@ -57,16 +55,10 @@ public class Percolation {
 			 if (checkIfBottom(pointer)) setValueOfParent(pointer,3);//connected to ground
 			 if (getValueOfParent(pointer)==0)setValueOfParent(pointer,1);
 		 }		 
-
-//		 oneDArray[pointer]=1; // 1 represents open
-//		 if (checkIfRight(pointer) || checkIfLeft(pointer)) oneDArray[pointer]=1;//open site
-//		 if (checkIfTop(pointer)) oneDArray[pointer]=2;//connected to water
-//		 if (checkIfBottom(pointer)) oneDArray[pointer]=3;//connected to ground
-	
 		 
 		 mergeAllNeighbors(pointer);
 		 oneDArray[pointer] = getValueOfParent(pointer);
-		 printValues();
+//		 printValues();
 		 
 	 }
 	
@@ -106,7 +98,7 @@ public class Percolation {
 		 
 	 public boolean percolates(){             
 		 // does the system percolate?
-		 System.out.println("Percolates: " + percolates);
+//		 System.out.println("Percolates: " + percolates);
 		 return percolates;
 	 }
 
@@ -194,7 +186,6 @@ public class Percolation {
 	 * If y == N-1, site is at bottom of grid
 	 */
 	private boolean checkIfBottom(int P){
-		boolean m = ((getY(P))==(N-1));
 //		if (m) System.out.println("I am at the bottom");
 		return ((getY(P))==(N-1));
 		}
@@ -249,9 +240,20 @@ public class Percolation {
 		
 	}
 	
+	/*
+	 * merge takes two integers: P (the current site), and neighbor (a site next to P)
+	 * 
+	 * it determines if one or the other is water, or ground
+	 * if ground is detected, it merges the two, and makes the parent water or ground
+	 * 
+	 * if both water and ground are detected, percolation is set to true
+	 * 
+	 * if neither water nor ground is detected, the parent is set to open
+	 */
 	private void merge(int P, int neighbor){
 		int neighborValue = getValueOfParent(neighbor);
-		if (neighborValue==0) return; //neighbor is not open. Exit the method		
+		if (neighborValue==0) return; //neighbor is not open. Exit the method
+		
 		int pValue = getValueOfParent(P);
 		boolean hasWater = false;
 		boolean hasGround = false;
@@ -262,131 +264,21 @@ public class Percolation {
 		setValueOfParent(P,1); //make parent open
 		if (hasGround == true) setValueOfParent(P,3); //make parent ground
 		if (hasWater == true) setValueOfParent(P,2); //make parent water
-
+			// setting water comes after setting ground because I want the squares to turn blue
 	}
 	
-	private void checkNeighbors(int P){
-		int neighbor;
-		
-		// if site isn't on the top border
-		if (!checkIfTop(P)){ 
-//			System.out.print("Top: ");
-			neighbor = neighborValue(P, (P-N)); 
-			
-		}
-		else {
-			//site is on the top
-			// todo connect site to water
-//			System.out.println("This site is water, there is no one above.");
-		}
-		
-		// if site isn't on the bottom border
-		if (!checkIfBottom(P)){ 
-//			System.out.print("Bottom: ");
-			neighbor = neighborValue(P,(P+N));}
-		else{
-			// site is on bottom
-			// todo connect site to ground
-//			System.out.println("This site is ground, there is no one below.");
-		}
-		
-		// if site isn't on the right side border
-		if (!checkIfRight(P)){
-//			System.out.print("Right: ");
-			neighbor = neighborValue(P,(P+1));
-			
-			// todo connect neighbors if applicable
-		}
-		else{
-			//site is on the right
-//			System.out.println("This site is on the right, there is no one to the right.");
-		}
-		
-		// if site isn't on the left side border
-		if (!checkIfLeft(P)){
-//			System.out.print("left: ");
-			neighbor = neighborValue(P,(P-1));
-			
-			//todo connect neighbors if applicable
-		}	
-		else{
-			//site is on the left
-//			System.out.println("This site is on the left, there is no one to the left");
-		}
-
-	}//end of checkNeighbors
-	
-	/*
-	 * neighborValue takes in a pointer value of the current site's neighbor
-	 *  
-	 *  it evaluates what value the neighbor has, 
-	 *  and takes the appropriate action based on it's value
-	 */
-	private int neighborValue(int P, int neighbor){
-		boolean hasWater=(oneDArray[P] == 2 || oneDArray[neighbor] == 2);
-		boolean hasGround=(oneDArray[P] == 3 || oneDArray[neighbor] == 3);
-		
-		switch (oneDArray[(neighbor)]){
-		case 0:
-//			System.out.println("my neighbor is closed");
-			return 0;
-		case 1:
-//			System.out.println("my neighbor is open");
-			//merge P and neighbor
-			uf.union(P, neighbor);
-			if (hasWater) {
-				oneDArray[uf.find(P)]=2; //make the head of the list water
-				return 2;
-			}
-			else if (hasGround) {
-				oneDArray[uf.find(P)]=3; //make the head of the list ground
-				return 3;
-			}
-			else return 1;
-		case 2:
-//			System.out.println("my neighbor is water");
-			uf.union(P, neighbor);
-			oneDArray[P]=2;
-			oneDArray[uf.find(P)]=2;			
-			// make P water
-
-			if (hasGround){
-				percolates = true;//I am ground and I am touching water
-			}
-			return 2;
-		case 3:
-//			System.out.println("my neighbor is ground");
-			uf.union(P, neighbor);
-
-			if (hasWater){
-				percolates = true;//I am ground and I am touching water
-				oneDArray[P]=2;
-				oneDArray[uf.find(P)]=2;
-				return 2;
-			}
-			else{
-				// make P ground
-				oneDArray[P]=3;
-				oneDArray[uf.find(P)]=3;
-				return 3;
-			}
-		default:
-			return 0;
-	}//end of switch
-	}
-	
-	public int getValueOfParent(int P){
+	private int getValueOfParent(int P){
 		int i = uf.find(P);
 		return oneDArray[i];
 	}
 	
-	public void setValueOfParent(int P, int value){
+	private void setValueOfParent(int P, int value){
 		int i = uf.find(P);
 		oneDArray[i] = value;
 		oneDArray[P] = value;//make sure the value of P is correct
 	}
 	
-	public void printValues(){
+	private void printValues(){
 		for (int i = 0; i < oneDArray.length; i++){
 			if (i%N == 0)System.out.println();
 			System.out.print(getValueOfParent(i)+" ");

@@ -6,9 +6,8 @@ import edu.princeton.cs.algs4.StdStats;
 public class PercolationStats {
 	
 	public static void main(String args[]){
-		int width = 3;
-		int experiments = 3;
-		
+		int width = 200;
+		int experiments = 100;		
 		PercolationStats ps = new PercolationStats(width, experiments);		
 		
 	}
@@ -17,7 +16,12 @@ public class PercolationStats {
 	private int T; // T is the number of experiments to run	
 	private int[] nArray; //holds the values to feed to Percolation, values will be shuffled
 	private Percolation perc;
-	private int[] percScores;// array to record all the percolation scores
+	private double[] percScores;// array to record all the percolation scores
+
+	private double standardDeviation=0;
+	private double mean=0;
+	private double confidenceLow=0;
+	private double confidenceHigh=0;
 
 	public PercolationStats(int N, int T){
 		//The constructor should take two arguments N and T		
@@ -26,12 +30,10 @@ public class PercolationStats {
 			 throw new IndexOutOfBoundsException("Both values must be greater than 0");
 		}
 		this.N = N;
-		this.T= T;
-		
+		this.T= T;		
 		int nByN = N * N;// speed up the process by not constantly multiplying N x N
-		int count = 0;
-		
-		percScores = new int[T]; // array to record all the percolation scores
+		double count = 0;		
+		percScores = new double[T]; // array to record all the percolation scores
 		int pSPointer = 0; //pointer for percScores[]
 		
 		
@@ -44,46 +46,49 @@ public class PercolationStats {
 			perc = new Percolation(N); //create a new Percolation object of N width
 			shuffle(nArray); //shuffle the array so it contains random numbers
 			
+			//loop through every value in the array
 			for (int m : nArray){
-				perc.open(getX(m), getY(m));
+				perc.open(getX(m), getY(m));//feed perc x and y values
 				count++;
+				
+				//when the system percolates
 				if (perc.percolates()){
-					System.out.println("Percolates at: " + count);
-					percScores[pSPointer++] = count;//record count into scores array					
+					percScores[pSPointer++] = (count/nByN);//record threshold into array					
 					count = 0; //reset the count
 					break; //stop once percolation occurs and go to next simulation
 				}
 			}
-		
-
 			T--;
-		}
-		
-		//print out the values of percScores
-		System.out.println("Perc Scores:");
-		for (int m : percScores){
-			System.out.printf("%d\n", m);
-		}
+		}//end of while loop
+				
+		mean = calculateMean();
+		standardDeviation = calculateStddev();
+		confidenceLow = calculateConfidenceLow();
+		confidenceHigh = calculateConfidenceHigh();
 		
 		System.out.printf("Mean: %f\n", mean());
 		System.out.printf("Standard Deviation: %f\n", stddev());
+		System.out.printf("Confidence Low: %f\n", confidenceLow());
+		System.out.printf("Confidence High: %f\n", confidenceHigh());		
 	}//end of constructor
 	
-	public double mean(){return StdStats.mean(percScores);}
+	//calculate mean
+	private double calculateMean(){return StdStats.mean(percScores);}
+	//calculate standard deviation
+	private double calculateStddev(){return StdStats.stddev(percScores);}	
+	//calculate confidence low
+	private double calculateConfidenceLow(){return (mean - ((1.96 * standardDeviation)/T));}
+	//calculate confidence high
+	public double calculateConfidenceHigh(){return (mean + ((1.96 * standardDeviation)/T));}
 	
-	public double stddev(){return StdStats.stddev(percScores);}
-	
-	public double confidenceLow(){          
-		// low  endpoint of 95% confidence interval
-		
-		return 0.0;
-	}
-	
-	public double confidenceHigh(){         
-		// high endpoint of 95% confidence interval
-		
-		return 0.0;
-	}
+	//return mean
+	public double mean(){return mean;}
+	//return standard deviation
+	public double stddev(){return standardDeviation;}
+	//return confidence low	
+	public double confidenceLow(){return confidenceLow;}
+	//return confidence high
+	public double confidenceHigh(){return confidenceHigh;}
 	
 	/*
 	 * shuffle takes an int[] and shuffles it
