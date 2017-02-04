@@ -4,10 +4,31 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 	 public static void main(String[] args) {
-	 //todo write method tests
-		 //test open method
-		 
+		 Percolation perc = new Percolation(2);//make a 9x9 grid
+		 perc.printValues(); // look at the initial grid
+		 	 
 		 //test percolation constructor
+		 if (	perc.N!=2 ||
+				perc.count!=0 ||
+				perc.percolates!=false
+			)System.out.println("Constructor has failed test");
+		 
+		 //test open method
+		 perc.open(0, 1);
+		 if (perc.count != 1)System.out.println("Count has failed");
+		 
+		 //test merge method and percolates method
+		 if (perc.getValueOfParent(1)!=2)System.out.println("Merge has failed");		 
+		 perc.open(1, 1);
+		 if (perc.count != 2 || perc.percolates != true)System.out.println("Open has failed");		 
+		 if (perc.getValueOfParent(3)!=2)System.out.println("Merge has failed");
+
+		 //test isOpen method
+		 if (!perc.isOpen(1, 1))System.out.println("isOpen method failed");
+		 //test isFull method
+		 if (!perc.isFull(1, 1))System.out.println("isFull method failed");
+		 
+		 perc.printValues();
 	 }
 	
 	private int N; // N is the length of one array side
@@ -278,6 +299,7 @@ public class Percolation {
 		oneDArray[P] = value;//make sure the value of P is correct
 	}
 	
+	//helper method to determine what my grid looks like
 	private void printValues(){
 		for (int i = 0; i < oneDArray.length; i++){
 			if (i%N == 0)System.out.println();
